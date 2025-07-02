@@ -13,11 +13,13 @@ const globalErrorHandler = (err: AppError, req: Request, res: Response, next: Ne
 class AppError extends Error {
     message: string;
     statusCode: number;
+    success: boolean;
 
     constructor(message: string, statusCode: number) {
         super(message)
         this.message = message;
         this.statusCode = statusCode;
+        this.success = false;
         // Prevent prototype pollution attacks
         Error.captureStackTrace(this, this.constructor);
     }
@@ -28,8 +30,10 @@ class AppResponse {
     status: number;
     message: string;
     data?: any;
+    success: boolean;
 
     constructor(status: number, message: string, data?: any) {
+        this.success = true;
         this.status = status;
         this.message = message;
         this.data = data;
