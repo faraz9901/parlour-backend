@@ -1,12 +1,22 @@
 import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 
 const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) => (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next).catch(next);
 };
 
 
-const globalErrorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.statusCode).json({ message: err.message, status: err.statusCode });
+const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+
+    if (err instanceof ZodError) {
+        return res.status(400).json({ message: err.errors[0].message, status: 400 });
+    }
+
+    if (err instanceof AppError) {
+        return res.status(err.statusCode).json({ message: err.message, status: err.statusCode });
+    }
+
+    return res.status(500).json({ message: "Internal Server Error", status: 500 });
 };
 
 

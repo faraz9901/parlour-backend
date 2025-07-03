@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 
 import dotenv from "dotenv";
@@ -22,8 +22,18 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 
+import employeeRoutes from "./routes/employee.routes";
+import taskRoutes from "./routes/task.routes";
+import attendanceLogRoutes from "./routes/attendanceLog.routes";
 
-app.use(globalErrorHandler);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/attendance', attendanceLogRoutes);
+
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    globalErrorHandler(err, req, res, next);
+});
 
 app.listen(PORT, () => {
     connectDB()
