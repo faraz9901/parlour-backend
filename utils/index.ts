@@ -1,15 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { Role } from "./enums";
 
-const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) => (req: Request, res: Response, next: NextFunction) => {
+
+interface AuthRequest extends Request {
+    user?: { _id: string, role: Role }
+}
+
+const asyncHandler = (fn: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>) => (req: AuthRequest, res: Response, next: NextFunction) => {
     fn(req, res, next).catch(next);
 };
 
 
-const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const globalErrorHandler = (err: any, req: AuthRequest, res: Response, next: NextFunction) => {
+
+    if (process.env.NODE_ENV === "development") console.log(err);
 
     if (err instanceof ZodError) {
-        return res.status(400).json({ message: err.errors[0].message, status: 400 });
+        return res.status(400).json({ message: err.issues[0].message, status: 400 });
     }
 
     if (err instanceof AppError) {
@@ -39,14 +47,14 @@ class AppError extends Error {
 class AppResponse {
     status: number;
     message: string;
-    data?: any;
+    content?: any;
     success: boolean;
 
-    constructor(status: number, message: string, data?: any) {
+    constructor(status: number, message: string, content?: any) {
         this.success = true;
         this.status = status;
         this.message = message;
-        this.data = data;
+        this.content = content;
     }
 }
 

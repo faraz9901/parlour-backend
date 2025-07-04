@@ -1,9 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.routes";
 import { globalErrorHandler } from "./utils";
 import { connectDB } from "./utils/db";
 
@@ -13,28 +12,32 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+app.use(cookieParser());
+
 app.use(cors({
-    origin: process.env.NODE_ENV === "development" ? "*" : process.env.APP_URL,
+    origin: process.env.APP_URL,
     credentials: true,
 }));
 
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
-
+// Routes
+import authRoutes from "./routes/auth.routes";
 import employeeRoutes from "./routes/employee.routes";
 import taskRoutes from "./routes/task.routes";
 import attendanceLogRoutes from "./routes/attendanceLog.routes";
 
+app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/attendance', attendanceLogRoutes);
 
-
+// Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     globalErrorHandler(err, req, res, next);
 });
 
+// Server
 app.listen(PORT, () => {
     connectDB()
         .then(() => {

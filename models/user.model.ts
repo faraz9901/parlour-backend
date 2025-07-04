@@ -11,7 +11,7 @@ interface UserDocument extends mongoose.Document {
     password: string;
     role: Role;
     comparePassword(password: string): Promise<boolean>;
-    generateToken(userId: string): string;
+    generateToken(): string;
     hashPassword(): Promise<void>;
 }
 
@@ -40,8 +40,6 @@ const userSchema = new mongoose.Schema<UserDocument>({
 });
 
 
-const User = mongoose.model<UserDocument>("User", userSchema);
-
 userSchema.methods.hashPassword = async function () {
     this.password = await argon2.hash(this.password);
 };
@@ -50,10 +48,10 @@ userSchema.methods.comparePassword = async function (password: string) {
     return await argon2.verify(this.password, password);
 };
 
-userSchema.methods.generateToken = function (userId: string) {
-    return jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+userSchema.methods.generateToken = function () {
+    return jwt.sign({ userId: this._id, role: this.role }, process.env.JWT_SECRET!, { expiresIn: "1h" });
 };
 
-
+const User = mongoose.model<UserDocument>("User", userSchema);
 
 export default User;
