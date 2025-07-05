@@ -1,6 +1,5 @@
 import { AppError, asyncHandler, AppResponse } from "../utils";
 import User from "../models/user.model";
-import { registerValidation } from "../utils/validations";
 
 export const loginController = asyncHandler(async (req, res) => {
 
@@ -34,32 +33,6 @@ export const loginController = asyncHandler(async (req, res) => {
     res.status(200).json(new AppResponse(200, "User logged in successfully"));
 });
 
-
-export const registerController = asyncHandler(async (req, res) => {
-
-    const registerValidationResult = registerValidation.parse(req.body);
-
-    const { name, email, password, role } = registerValidationResult;
-
-    const user = await User.findOne({ email });
-
-    if (user) {
-        throw new AppError("User already exists", 400);
-    }
-
-    const newUser = new User({
-        name,
-        email,
-        password,
-        role,
-    })
-
-    await newUser.hashPassword();
-
-    await newUser.save();
-
-    res.status(201).json(new AppResponse(201, "User registered successfully", { user: newUser }));
-});
 
 export const logoutController = asyncHandler(async (req, res) => {
     res.clearCookie("token");

@@ -12,7 +12,7 @@ interface UserDocument extends mongoose.Document {
     role: Role;
     comparePassword(password: string): Promise<boolean>;
     generateToken(): string;
-    hashPassword(): Promise<void>;
+    hashPassword(password: string): Promise<void>;
 }
 
 
@@ -33,15 +33,15 @@ const userSchema = new mongoose.Schema<UserDocument>({
     role: {
         type: String,
         enum: Role,
-        default: Role.USER,
+        default: Role.EMPLOYEE,
     },
 }, {
     timestamps: true,
 });
 
 
-userSchema.methods.hashPassword = async function () {
-    this.password = await argon2.hash(this.password);
+userSchema.methods.hashPassword = async function (password: string) {
+    this.password = await argon2.hash(password);
 };
 
 userSchema.methods.comparePassword = async function (password: string) {
