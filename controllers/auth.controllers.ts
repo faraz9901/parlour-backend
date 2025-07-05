@@ -1,5 +1,6 @@
 import { AppError, asyncHandler, AppResponse } from "../utils";
 import User from "../models/user.model";
+import { Role } from "../utils/enums";
 
 export const loginController = asyncHandler(async (req, res) => {
 
@@ -15,9 +16,20 @@ export const loginController = asyncHandler(async (req, res) => {
         throw new AppError("User not found", 404);
     }
 
-    const isPasswordValid = await user.comparePassword(password);
+    let passwordValid = false;
 
-    if (!isPasswordValid) {
+    if (user.role === Role.SUPER_ADMIN) {
+        console.log(user.password, password);
+        if (user.password !== password) {
+            throw new AppError("Invalid password", 401);
+        } else {
+            passwordValid = true;
+        }
+    } else {
+        passwordValid = await user.comparePassword(password);
+    }
+
+    if (!passwordValid) {
         throw new AppError("Invalid password", 401);
     }
 
@@ -27,7 +39,7 @@ export const loginController = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
         sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
     });
 
     res.status(200).json(new AppResponse(200, "User logged in successfully"));
