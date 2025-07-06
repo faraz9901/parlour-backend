@@ -12,13 +12,22 @@ export const taskCreationController = asyncHandler(async (req, res) => {
 });
 
 export const taskGetAllController = asyncHandler(async (req, res) => {
-    const tasks = await Task.find().populate('assignedTo');
+    const tasks = await Task.find().populate({
+        path: "assignedTo",
+        select: "_id name email"
+    })
+
+    console.log(tasks)
+
     res.status(200).json(new AppResponse(200, "All tasks", tasks));
 });
 
 export const taskGetController = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const task = await Task.findById(id).populate('assignedTo');
+    const task = await Task.findById(id).populate({
+        path: "assignedTo",
+        select: "_id name email"
+    })
 
     if (!task) {
         throw new AppError("Task not found", 404);

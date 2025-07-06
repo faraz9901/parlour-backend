@@ -7,9 +7,9 @@ export interface AttendanceLogDocument extends mongoose.Document {
 }
 
 const attendanceLogSchema = new mongoose.Schema<AttendanceLogDocument>({
-    employee: { type: mongoose.Schema.Types.ObjectId, ref: "Employee", required: true },
+    employee: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     checkIn: { type: Date, required: true },
-    checkOut: { type: Date },
+    checkOut: { type: Date, default: null },
 }, {
     timestamps: true,
 });

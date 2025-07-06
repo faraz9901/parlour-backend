@@ -21,42 +21,30 @@ export const userCreationValidation = z.object({
     role: z.enum([Role.ADMIN, Role.EMPLOYEE, Role.SUPER_ADMIN], { required_error: "Role is required", message: "Invalid role" }),
 });
 
-// Employee Validations
-export const employeeCreateValidation = z.object({
-    name: z.string({ required_error: "Name is required" }).min(3, { message: "Name must be at least 3 characters long" }),
-    email: z.string({ required_error: "Email is required" }).email({ message: "Invalid email" }),
-    phone: z.string({ required_error: "Phone is required" }).min(8, { message: "Phone must be at least 8 characters long" }),
-    position: z.string({ required_error: "Position is required" }).min(2, { message: "Position must be at least 2 characters long" }),
-    salary: z.number({ required_error: "Salary is required" }).nonnegative({ message: "Salary must be a non-negative number" })
-});
-
-export const employeeUpdateValidation = z.object({
-    name: z.string({ required_error: "Name is required" }).min(3).optional(),
-    email: z.string().email({ message: "Invalid email" }).optional(),
-    phone: z.string().min(8, { message: "Phone must be at least 8 characters long" }).optional(),
-    position: z.string().min(2, { message: "Position must be at least 2 characters long" }).optional(),
-    salary: z.number().nonnegative({ message: "Salary must be a non-negative number" }).optional()
-});
 
 // Task Validations
 export const taskCreateValidation = z.object({
-    title: z.string().min(3),
-    description: z.string().optional(),
-    assignedTo: z.string().length(24), // MongoDB ObjectId
-    status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED]).optional(),
+    title: z.string({ required_error: "Title is required" }).min(3, { message: "Title must be at least 3 characters long" }),
+    description: z.string({ required_error: "Description is required" }),
+    assignedTo: z.string({ required_error: "Assigned to is required" }).length(24, { message: "Invalid assigned to" }), // MongoDB ObjectId
+    status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], { required_error: "Status is required", message: "Invalid status" })
 });
 
 export const taskUpdateValidation = z.object({
-    title: z.string().min(3).optional(),
-    description: z.string().optional(),
-    assignedTo: z.string().length(24).optional(),
-    status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED]).optional(),
+    title: z.string({ required_error: "Title is required" }).min(3, { message: "Title must be at least 3 characters long" }).optional(),
+    description: z.string({ required_error: "Description is required" }).optional(),
+    assignedTo: z.string({ required_error: "Assigned to is required" }).length(24, { message: "Invalid assigned to" }),
+    status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], { required_error: "Status is required", message: "Invalid status" })
 });
 
-// AttendanceLog Validations
+// Attendance Validations
 export const attendanceLogCreateValidation = z.object({
-    employeeId: z.string().length(24), // MongoDB ObjectId
-    date: z.coerce.date(),
-    hoursWorked: z.number().nonnegative(),
-    notes: z.string().optional()
+    checkIn: z.date({ required_error: "Check-in time is required" }),
+    checkOut: z.date().optional()
 });
+
+export const attendanceLogUpdateValidation = z.object({
+    checkOut: z.date({ required_error: "Check-out time is required" }),
+});
+
+

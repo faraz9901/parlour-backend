@@ -23,14 +23,12 @@ app.use(express.json());
 
 // Routes
 import authRoutes from "./routes/auth.routes";
-import employeeRoutes from "./routes/employee.routes";
 import taskRoutes from "./routes/task.routes";
 import attendanceLogRoutes from "./routes/attendanceLog.routes";
 import userRoutes from "./routes/user.route";
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/employees', employeeRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/attendance', attendanceLogRoutes);
 

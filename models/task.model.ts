@@ -11,7 +11,7 @@ export interface TaskDocument extends mongoose.Document {
 const taskSchema = new mongoose.Schema<TaskDocument>({
     title: { type: String, required: true },
     description: { type: String },
-    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "Employee", required: true },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     status: { type: String, enum: [TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], default: TaskStatus.PENDING },
 }, {
     timestamps: true,
