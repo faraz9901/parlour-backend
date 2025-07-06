@@ -37,7 +37,13 @@ export const loginController = asyncHandler(async (req, res) => {
 
 
 export const logoutController = asyncHandler(async (req, res) => {
-    res.clearCookie("token");
+    res.cookie("token", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: process.env.NODE_ENV !== "development" ? "none" : "lax",
+        maxAge: 0,
+    });
+
     res.status(200).json(new AppResponse(200, "User logged out successfully"));
 });
 
