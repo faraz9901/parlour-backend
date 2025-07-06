@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import { Role } from "./enums";
+import { Server } from "socket.io";
 
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
     user?: { _id: string, role: Role }
+    io?: Server
 }
 
 const asyncHandler = (fn: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>) => (req: AuthRequest, res: Response, next: NextFunction) => {

@@ -8,8 +8,6 @@ const checkAuth = asyncHandler(async (req, res, next) => {
 
     const { token } = req.cookies;
 
-    console.log(req.cookies)
-
     if (!token) {
         throw new AppError("Invalid Session", 401);
     }

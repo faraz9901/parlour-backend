@@ -2,9 +2,10 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-
-import { globalErrorHandler } from "./utils";
+import { createServer } from "http";
+import { AuthRequest, globalErrorHandler } from "./utils";
 import { connectDB } from "./utils/db";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -20,6 +21,20 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+const server = createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.APP_URL,
+        credentials: true,
+    }
+});
+
+app.use((req: AuthRequest, res, next) => {
+    req.io = io;
+    next();
+});
 
 // Routes
 import authRoutes from "./routes/auth.routes";
@@ -38,7 +53,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB()
         .then(() => {
             console.log(`Server is running on port ${PORT}`);

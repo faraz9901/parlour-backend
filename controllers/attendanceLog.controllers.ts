@@ -2,7 +2,7 @@ import AttendanceLog from "../models/attendanceLog.model";
 import { AppError, asyncHandler, AppResponse } from "../utils";
 
 export const getAttendanceLogs = asyncHandler(async (req, res) => {
-    const logs = await AttendanceLog.find().populate("employeeId");
+    const logs = await AttendanceLog.find().populate("employee");
     res.status(200).json(new AppResponse(200, "All attendance logs", logs));
 });
 
@@ -29,6 +29,10 @@ export const checkInController = asyncHandler(async (req, res) => {
     }
 
     const newLog = await AttendanceLog.create({ employee, checkIn: now, checkOut: null });
+
+    if (req.io) {
+        req.io.emit("attendance-update");
+    }
 
     res.status(201).json(new AppResponse(201, "Check-in successful", newLog));
 });
@@ -59,6 +63,10 @@ export const checkOutController = asyncHandler(async (req, res) => {
 
     log.checkOut = now;
     await log.save();
+
+    if (req.io) {
+        req.io.emit("attendance-update");
+    }
 
     res.status(200).json(new AppResponse(200, "Check-out successful", log));
 });
