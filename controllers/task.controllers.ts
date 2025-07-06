@@ -22,20 +22,6 @@ export const taskGetAllController = asyncHandler(async (req, res) => {
     res.status(200).json(new AppResponse(200, "All tasks", tasks));
 });
 
-export const taskGetController = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const task = await Task.findById(id).populate({
-        path: "assignedTo",
-        select: "_id name email"
-    })
-
-    if (!task) {
-        throw new AppError("Task not found", 404);
-    }
-
-    res.status(200).json(new AppResponse(200, "Task found", task));
-});
-
 export const taskUpdateController = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -69,17 +55,4 @@ export const taskDeleteController = asyncHandler(async (req, res) => {
     res.status(200).json(new AppResponse(200, "Task deleted successfully", { task }));
 });
 
-export const taskGetAssignedController = asyncHandler(async (req, res) => {
-
-    if (!req.user) {
-        throw new AppError("You do not have permission to access this resource", 401);
-    }
-
-    const tasks = await Task.find({ assignedTo: req.user._id }).populate({
-        path: "assignedTo",
-        select: "_id name email"
-    })
-
-    res.status(200).json(new AppResponse(200, "Assigned tasks", tasks));
-});
 

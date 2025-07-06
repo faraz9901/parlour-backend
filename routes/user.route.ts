@@ -13,10 +13,8 @@ router.put('/update/:id', checkAuth, checkRole([Role.SUPER_ADMIN]), userUpdateCo
 
 router.delete('/delete/:id', checkAuth, checkRole([Role.SUPER_ADMIN]), userDeleteController);
 
-router.get('/', checkAuth, userGetAllController);
+router.get('/', checkAuth, checkRole([Role.SUPER_ADMIN, Role.ADMIN]), userGetAllController);
 
 router.get('/employees', employeesGetController);
-
-
 
 export default router;
