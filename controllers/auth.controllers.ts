@@ -42,6 +42,13 @@ export const loginController = asyncHandler(async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
     });
 
+    res.cookie("role", user.role, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+    });
+
     res.status(200).json(new AppResponse(200, "User logged in successfully"));
 });
 
