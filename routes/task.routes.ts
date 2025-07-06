@@ -7,6 +7,7 @@ import {
     taskDeleteController,
     taskGetAllController,
     taskGetController,
+    taskGetAssignedController,
     taskUpdateController
 } from "../controllers/task.controllers";
 import { taskCreateValidation, taskUpdateValidation } from "../utils/validations";
@@ -46,6 +47,14 @@ router.get(
     '/get/:id',
     checkAuth,
     taskGetController
+);
+
+// Employee assigned tasks - Only employees can access their assigned tasks
+router.get(
+    '/employee',
+    checkAuth,
+    checkRole([Role.EMPLOYEE]),
+    taskGetAssignedController
 );
 
 // Get all tasks - Available to all authenticated users

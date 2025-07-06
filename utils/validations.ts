@@ -37,14 +37,3 @@ export const taskUpdateValidation = z.object({
     status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], { required_error: "Status is required", message: "Invalid status" })
 });
 
-// Attendance Validations
-export const attendanceLogCreateValidation = z.object({
-    checkIn: z.date({ required_error: "Check-in time is required" }),
-    checkOut: z.date().optional()
-});
-
-export const attendanceLogUpdateValidation = z.object({
-    checkOut: z.date({ required_error: "Check-out time is required" }),
-});
-
-
