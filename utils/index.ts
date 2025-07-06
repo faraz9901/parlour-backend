@@ -58,4 +58,15 @@ class AppResponse {
     }
 }
 
-export { asyncHandler, globalErrorHandler, AppError, AppResponse };
+
+const validate = (schema: any) => (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        req.body = schema.parse(req.body);
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+export { asyncHandler, globalErrorHandler, AppError, AppResponse, validate };

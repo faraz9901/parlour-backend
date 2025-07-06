@@ -1,28 +1,58 @@
 import express from "express";
+import checkAuth from "../middlewares/checkAuth.middleware";
+import checkRole from "../middlewares/checkRole.middleware";
+import { Role } from "../utils/enums";
 import {
-  addTask,
-  getTasks,
-  getTaskById,
-  updateTask,
-  deleteTask
+    taskCreationController,
+    taskDeleteController,
+    taskGetAllController,
+    taskGetController,
+    taskUpdateController
 } from "../controllers/task.controllers";
 import { taskCreateValidation, taskUpdateValidation } from "../utils/validations";
+import { validate } from "../utils";
 
 const router = express.Router();
 
-const validate = (schema: any) => (req: any, res: any, next: any) => {
-  try {
-    req.body = schema.parse(req.body);
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
 
-router.post("/", validate(taskCreateValidation), addTask);
-router.get("/", getTasks);
-router.get("/:id", getTaskById);
-router.put("/:id", validate(taskUpdateValidation), updateTask);
-router.delete("/:id", deleteTask);
+// Create task - Only super admins can create tasks
+router.post(
+    '/create',
+    checkAuth,
+    checkRole([Role.SUPER_ADMIN]),
+    validate(taskCreateValidation),
+    taskCreationController
+);
+
+// Update task - Only super admins can update tasks
+router.put(
+    '/update/:id',
+    checkAuth,
+    checkRole([Role.SUPER_ADMIN]),
+    validate(taskUpdateValidation),
+    taskUpdateController
+);
+
+// Delete task - Only super admins can delete tasks
+router.delete(
+    '/delete/:id',
+    checkAuth,
+    checkRole([Role.SUPER_ADMIN]),
+    taskDeleteController
+);
+
+// Get single task - Available to all authenticated users
+router.get(
+    '/get/:id',
+    checkAuth,
+    taskGetController
+);
+
+// Get all tasks - Available to all authenticated users
+router.get(
+    '/',
+    checkAuth,
+    taskGetAllController
+);
 
 export default router;

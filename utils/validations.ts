@@ -44,7 +44,6 @@ export const taskCreateValidation = z.object({
     description: z.string().optional(),
     assignedTo: z.string().length(24), // MongoDB ObjectId
     status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED]).optional(),
-    dueDate: z.coerce.date().optional()
 });
 
 export const taskUpdateValidation = z.object({
@@ -52,7 +51,6 @@ export const taskUpdateValidation = z.object({
     description: z.string().optional(),
     assignedTo: z.string().length(24).optional(),
     status: z.enum([TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED]).optional(),
-    dueDate: z.coerce.date().optional()
 });
 
 // AttendanceLog Validations

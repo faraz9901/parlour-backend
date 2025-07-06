@@ -1,32 +1,61 @@
-import { Request, Response } from "express";
+import { asyncHandler } from "../utils";
 import Task from "../models/task.model";
-import { AppError, asyncHandler, AppResponse } from "../utils";
+import { AppError, AppResponse } from "../utils";
+import { taskCreateValidation, taskUpdateValidation } from "../utils/validations";
+import mongoose from "mongoose";
 
-export const addTask = asyncHandler(async (req: Request, res: Response) => {
-    const { title, description, assignedTo, status, dueDate } = req.body;
-    const task = await Task.create({ title, description, assignedTo, status, dueDate });
-    res.status(201).json(new AppResponse(201, "Task added", task));
+export const taskCreationController = asyncHandler(async (req, res) => {
+
+    const task = await Task.create(req.body);
+
+    res.status(201).json(new AppResponse(201, "Task created successfully", { task }));
 });
 
-export const getTasks = asyncHandler(async (req: Request, res: Response) => {
-    const tasks = await Task.find().populate("assignedTo");
+export const taskGetAllController = asyncHandler(async (req, res) => {
+    const tasks = await Task.find().populate('assignedTo');
     res.status(200).json(new AppResponse(200, "All tasks", tasks));
 });
 
-export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
-    const task = await Task.findById(req.params.id).populate("assignedTo");
-    if (!task) throw new AppError("Task not found", 404);
+export const taskGetController = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const task = await Task.findById(id).populate('assignedTo');
+
+    if (!task) {
+        throw new AppError("Task not found", 404);
+    }
+
     res.status(200).json(new AppResponse(200, "Task found", task));
 });
 
-export const updateTask = asyncHandler(async (req: Request, res: Response) => {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!task) throw new AppError("Task not found", 404);
-    res.status(200).json(new AppResponse(200, "Task updated", task));
+export const taskUpdateController = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const { title, description, assignedTo, status } = req.body;
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+        throw new AppError("Task not found", 404);
+    }
+
+    task.title = title || task.title;
+    task.description = description || task.description;
+    task.assignedTo = new mongoose.Types.ObjectId(`${assignedTo}`) || task.assignedTo;
+    task.status = status || task.status;
+
+    const updatedTask = await task.save();
+
+    res.status(200).json(new AppResponse(200, "Task updated successfully", { task: updatedTask }));
 });
 
-export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
-    const task = await Task.findByIdAndDelete(req.params.id);
-    if (!task) throw new AppError("Task not found", 404);
-    res.status(200).json(new AppResponse(200, "Task deleted", task));
+export const taskDeleteController = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const task = await Task.findByIdAndDelete(id);
+
+    if (!task) {
+        throw new AppError("Task not found", 404);
+    }
+
+    res.status(200).json(new AppResponse(200, "Task deleted successfully", { task }));
 });
