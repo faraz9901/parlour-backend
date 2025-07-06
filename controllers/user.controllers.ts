@@ -31,16 +31,10 @@ export const userCreationController = asyncHandler(async (req, res) => {
 });
 
 
-
-export const userGetController = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const user = await User.findById(id).select("-password");
-    if (!user) {
-        throw new AppError("User not found", 404);
-    }
-    res.status(200).json(new AppResponse(200, "User found", user));
+export const employeesGetController = asyncHandler(async (req, res) => {
+    const users = await User.find({ role: Role.EMPLOYEE }).select("-password");
+    res.status(200).json(new AppResponse(200, "All employees", users));
 });
-
 
 export const userGetAllController = asyncHandler(async (req, res) => {
     const users = await User.find({ role: { $ne: Role.SUPER_ADMIN } }).select("-password");

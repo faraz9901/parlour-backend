@@ -2,7 +2,7 @@ import express from "express";
 import checkAuth from "../middlewares/checkAuth.middleware";
 import checkRole from "../middlewares/checkRole.middleware";
 import { Role } from "../utils/enums";
-import { userCreationController, userDeleteController, userGetAllController, userGetController, userUpdateController } from "../controllers/user.controllers";
+import { userCreationController, userDeleteController, userGetAllController, employeesGetController, userUpdateController } from "../controllers/user.controllers";
 
 
 const router = express.Router();
@@ -13,9 +13,9 @@ router.put('/update/:id', checkAuth, checkRole([Role.SUPER_ADMIN]), userUpdateCo
 
 router.delete('/delete/:id', checkAuth, checkRole([Role.SUPER_ADMIN]), userDeleteController);
 
-router.get('/get/:id', checkAuth, userGetController);
-
 router.get('/', checkAuth, userGetAllController);
+
+router.get('/employees', employeesGetController);
 
 
 
