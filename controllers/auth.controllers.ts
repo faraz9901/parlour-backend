@@ -16,18 +16,8 @@ export const loginController = asyncHandler(async (req, res) => {
         throw new AppError("User not found", 404);
     }
 
-    let passwordValid = false;
 
-    if (user.role === Role.SUPER_ADMIN) {
-        console.log(user.password, password);
-        if (user.password !== password) {
-            throw new AppError("Invalid password", 401);
-        } else {
-            passwordValid = true;
-        }
-    } else {
-        passwordValid = await user.comparePassword(password);
-    }
+    const passwordValid = await user.comparePassword(password);
 
     if (!passwordValid) {
         throw new AppError("Invalid password", 401);
