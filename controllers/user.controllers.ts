@@ -1,14 +1,11 @@
 import { asyncHandler } from "../utils";
-import { userCreationValidation } from "../utils/validations";
 import User from "../models/user.model";
 import { AppError, AppResponse } from "../utils";
 import { Role } from "../utils/enums";
 
 export const userCreationController = asyncHandler(async (req, res) => {
 
-    const userCreationValidationResult = userCreationValidation.parse(req.body);
-
-    const { name, email, password, role } = userCreationValidationResult;
+    const { name, email, password, role } = req.body;
 
     const user = await User.findOne({ email });
 

@@ -28,7 +28,10 @@ const userSchema = new mongoose.Schema<UserDocument>({
     },
     password: {
         type: String,
-        required: true,
+        required: function () {
+            // password is required for all roles except employee
+            return this.role !== Role.EMPLOYEE;
+        },
     },
     role: {
         type: String,
@@ -41,6 +44,10 @@ const userSchema = new mongoose.Schema<UserDocument>({
 
 
 userSchema.methods.hashPassword = async function (password: string) {
+    if (this.role === Role.EMPLOYEE) {
+        this.password = "";
+        return;
+    }
     this.password = await argon2.hash(password);
 };
 
